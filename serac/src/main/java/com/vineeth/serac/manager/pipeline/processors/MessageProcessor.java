@@ -1,35 +1,41 @@
-package com.vineeth.serac.manager.processors;
+package com.vineeth.serac.manager.pipeline.processors;
 
 
-import com.vineeth.serac.gossip.GossipNode;
+import com.vineeth.serac.manager.pipeline.IProcessor;
+import com.vineeth.serac.manager.pipeline.ProcessorContext;
 import com.vineeth.serac.messages.GossipMessage;
 import com.vineeth.serac.messages.Message;
 import com.vineeth.serac.store.HeartBeatStore;
-import com.vineeth.serac.store.NodeStore;
+import com.vineeth.serac.store.MessageStore;
+import com.vineeth.serac.store.nodestore.Node;
+import com.vineeth.serac.store.nodestore.NodeStore;
 import com.vineeth.serac.store.suspectstore.SuspectRow;
 import com.vineeth.serac.store.suspectstore.SuspectStore;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 
 public class MessageProcessor implements IProcessor {
+    private MessageStore messageStore;
     private NodeStore nodeStore;
     private HeartBeatStore heartBeatStore;
     private SuspectStore suspectStore;
 
-    public MessageProcessor(NodeStore nodeStore, HeartBeatStore heartBeatStore, SuspectStore suspectStore) {
+    public MessageProcessor(MessageStore messageStore, NodeStore nodeStore,
+                            HeartBeatStore heartBeatStore, SuspectStore suspectStore) {
+        this.messageStore = messageStore;
         this.nodeStore = nodeStore;
         this.heartBeatStore = heartBeatStore;
         this.suspectStore = suspectStore;
     }
 
     @Override
-    public CompletionStage<ProcessorContext> process(ProcessorContext context) {
-        CompletionStage<ProcessorContext> stage = new CompletableFuture<>();
-        processMessages(context.getMessages());
-        return stage;
+    public CompletableFuture<ProcessorContext> process(ProcessorContext context) {
+        CompletableFuture<ProcessorContext> future = new CompletableFuture<>();
+        processMessages(messageStore.clearAndGetAllMessages());
+        future.complete(context);
+        return future;
     }
 
     private void processMessages(List<Message> messages) {
@@ -48,10 +54,10 @@ public class MessageProcessor implements IProcessor {
         heartBeatStore.updateHeartBeatForNode(senderNodeId, System.currentTimeMillis());
     }
 
-    private void handleNodeData(Map<String, GossipNode> nodeData) {
+    private void handleNodeData(Map<String, Node> nodeData) {
         for(String nodeId: nodeData.keySet()) {
             if(!nodeStore.containsNode(nodeId)) {
-                GossipNode newNode = nodeData.get(nodeId);
+                Node newNode = nodeData.get(nodeId);
                 nodeStore.addNode(nodeId, newNode);
                 heartBeatStore.addNode(nodeId);
                 suspectStore.addNode(nodeId);

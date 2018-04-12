@@ -1,14 +1,14 @@
 package com.vineeth.serac.messages;
 
 
-import com.vineeth.serac.gossip.GossipNode;
+import com.vineeth.serac.store.nodestore.Node;
 import com.vineeth.serac.store.suspectstore.SuspectRow;
 
 import java.util.Map;
 
 public class GossipMessage extends Message {
     private String nodeId;
-    private Map<String, GossipNode> nodeData;
+    private Map<String, Node> nodeData;
     private Map<String, Long> heartBeatData;
     private Map<String, SuspectRow> suspectData;
 
@@ -37,11 +37,11 @@ public class GossipMessage extends Message {
         this.suspectData = suspectData;
     }
 
-    public Map<String, GossipNode> getNodeData() {
+    public Map<String, Node> getNodeData() {
         return nodeData;
     }
 
-    public void setNodeData(Map<String, GossipNode> nodeData) {
+    public void setNodeData(Map<String, Node> nodeData) {
         this.nodeData = nodeData;
     }
 }

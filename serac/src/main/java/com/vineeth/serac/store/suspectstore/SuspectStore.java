@@ -1,6 +1,6 @@
 package com.vineeth.serac.store.suspectstore;
 
-import com.vineeth.serac.store.NodeStore;
+import com.vineeth.serac.store.nodestore.NodeStore;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,5 +40,15 @@ public class SuspectStore {
 
     public SuspectRow getSuspectRowForNode(String nodeId) {
         return suspectStore.compute(nodeId, (key, value) -> value);
+    }
+
+    public int getSuspectCountForNodeId(String nodeId) {
+        int suspectCount = 0;
+        for(SuspectRow suspectRow: suspectStore.values()) {
+            if(suspectRow.isNodeSuspected(nodeId)) {
+                suspectCount++;
+            }
+        }
+        return suspectCount;
     }
 }

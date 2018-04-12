@@ -1,7 +1,5 @@
-package com.vineeth.serac.store;
+package com.vineeth.serac.store.nodestore;
 
-
-import com.vineeth.serac.gossip.GossipNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,19 +7,19 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class NodeStore {
-    private GossipNode currentNode;
-    private Map<String, GossipNode> nodeStore;
+    private Node currentNode;
+    private Map<String, Node> nodeStore;
 
-    public NodeStore(GossipNode currentNode) {
+    public NodeStore(Node currentNode) {
         nodeStore = new ConcurrentHashMap<>();
         this.currentNode = currentNode;
     }
 
-    public GossipNode getNodeById(String nodeId) {
+    public Node getNodeById(String nodeId) {
         return nodeStore.compute(nodeId, (key, value) -> value);
     }
 
-    public void addNode(String nodeId, GossipNode node) {
+    public void addNode(String nodeId, Node node) {
         nodeStore.putIfAbsent(nodeId, node);
     }
 
@@ -29,15 +27,15 @@ public class NodeStore {
         return nodeStore.containsKey(nodeId);
     }
 
-    public GossipNode getCurrentNode() {
+    public Node getCurrentNode() {
         return currentNode;
     }
 
-    public void setCurrentNode(GossipNode currentNode) {
+    public void setCurrentNode(Node currentNode) {
         this.currentNode = currentNode;
     }
 
-    public List<String> getAllNodes() {
+    public List<String> getAllNodeIds() {
         return new ArrayList<>(nodeStore.keySet());
     }
 }

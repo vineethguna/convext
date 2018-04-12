@@ -1,43 +1,28 @@
 package com.vineeth.serac.server;
 
-import com.vineeth.serac.gossip.Gossip;
-import com.vineeth.serac.server.handlers.SeracHandler;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import io.grpc.Server;
+import io.grpc.ServerBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SeracServer {
+    private static final Logger logger = LoggerFactory.getLogger(SeracServer.class);
+
     private Server server;
-    private Gossip gossip;
-    private ContextHandlerCollection handlerCollection = new ContextHandlerCollection();
 
-    public SeracServer(Gossip gossip) {
-        this(gossip,5142);
-    }
-
-    public SeracServer(Gossip gossip, int port) {
-        this.gossip = gossip;
-
-        server = new Server(port);
-        ServerConnector serverConnector = new ServerConnector(server);
-        server.addConnector(serverConnector);
-
-        SeracHandler gossipHandler = new SeracHandler(gossip);
-        ContextHandler healthCheckContextHandler = new ContextHandler();
-        healthCheckContextHandler.setContextPath("/gossip");
-        healthCheckContextHandler.setHandler(gossipHandler);
-        healthCheckContextHandler.setAllowNullPathInfo(true);
-        handlerCollection.addHandler(gossipHandler);
-
-        server.setHandler(handlerCollection);
+    public SeracServer(SeracService seracService, int port) {
+        this.server = ServerBuilder.forPort(port).addService(seracService).build();
     }
 
     public void start() throws Exception {
+        logger.info("Starting Serac GRPC Server to listen to messages");
         server.start();
     }
 
-    public void stop() throws Exception {
-
+    public void stop() {
+        logger.info("Stoping Serac GRPC Server");
+        if (server != null) {
+            server.shutdown();
+        }
     }
 }

@@ -1,12 +1,14 @@
-package com.vineeth.serac.manager.processors;
+package com.vineeth.serac.manager.pipeline.processors;
 
+import com.vineeth.serac.manager.pipeline.IProcessor;
+import com.vineeth.serac.manager.pipeline.ProcessorContext;
 import com.vineeth.serac.store.HeartBeatStore;
-import com.vineeth.serac.store.NodeStore;
+import com.vineeth.serac.store.nodestore.NodeStore;
 import com.vineeth.serac.store.suspectstore.SuspectRow;
 import com.vineeth.serac.store.suspectstore.SuspectStore;
 
 import java.util.List;
-import java.util.concurrent.CompletionStage;
+import java.util.concurrent.CompletableFuture;
 
 public class EvaluateSuspectMatrixProcessor implements IProcessor {
     private NodeStore nodeStore;
@@ -27,19 +29,21 @@ public class EvaluateSuspectMatrixProcessor implements IProcessor {
     }
 
     @Override
-    public CompletionStage<ProcessorContext> process(ProcessorContext context) {
+    public CompletableFuture<ProcessorContext> process(ProcessorContext context) {
+        CompletableFuture<ProcessorContext>  future = new CompletableFuture<>();
         evaluateSuspectMatrixForCurrentNode();
-        return null;
+        future.complete(context);
+        return future;
     }
 
     private void evaluateSuspectMatrixForCurrentNode() {
-        List<String> nodeIds = nodeStore.getAllNodes();
+        List<String> nodeIds = nodeStore.getAllNodeIds();
         SuspectRow suspectRowForCurrentNode = suspectStore.getSuspectRowForNode(nodeStore.getCurrentNode().getId());
         for(String nodeId: nodeIds) {
             Long heartBeatTimeStamp = heartBeatStore.getHeartBeatForNode(nodeId);
             Long currentTimeStamp = System.currentTimeMillis();
             if((currentTimeStamp - heartBeatTimeStamp) > healthyThreshold * gossipInterval) {
-                suspectRowForCurrentNode.updateState(nodeId, true);
+                suspectRowForCurrentNode.updateStateForNode(nodeId, true);
             }
         }
     }

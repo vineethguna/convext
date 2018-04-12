@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info" packages="com.splunk.logging">
+    <Properties>
+        <Property name="logFormat">%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p ${hostName} %X{pid} [%t] %X{cid} %c %m%n</Property>
+    </Properties>
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout alwaysWriteExceptions="true" pattern="${logFormat}" />
+        </Console>
+    </Appenders>
+    <Loggers>
+        <AsyncRoot level="info">
+            <AppenderRef ref="console" />
+        </AsyncRoot>
+    </Loggers>
+</Configuration>

@@ -32,7 +32,11 @@ public class SuspectRow {
         row.putIfAbsent(nodeId, false);
     }
 
-    public void updateState(String nodeId, Boolean newState) {
+    public void updateStateForNode(String nodeId, Boolean newState) {
         row.compute(nodeId, (key, value) -> newState);
+    }
+
+    public boolean isNodeSuspected(String nodeId) {
+        return row.compute(nodeId, (key, value) -> value);
     }
 }
