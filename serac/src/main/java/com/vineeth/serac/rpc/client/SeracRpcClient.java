@@ -10,7 +10,6 @@ import com.vineeth.serac.store.nodestore.Node;
 import com.vineeth.serac.store.suspectstore.SuspectRow;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import io.grpc.StatusRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,16 +37,15 @@ public class SeracRpcClient {
         channel.shutdown();
     }
 
-    public void callProcessMessage(Message message) {
+    public void callProcessMessage(Message message) throws Exception {
         SeracProto.Message.Builder rpcMessageBuilder = SeracProto.Message.newBuilder();
         if(message instanceof GossipMessage) {
             rpcMessageBuilder.setType(SeracProto.Message.Type.GOSSIP);
             rpcMessageBuilder.setGossipMessage(constructRpcGossipMessage((GossipMessage) message));
         }
-        try {
-            SeracProto.Response response = blockingStub.processMessage(rpcMessageBuilder.build());
-        } catch (StatusRuntimeException e) {
-            logger.error("processMessage rpc call failed", e);
+        SeracProto.Response response = blockingStub.processMessage(rpcMessageBuilder.build());
+        if(!response.getSuccess()) {
+            throw new Exception("Call Process Message not successful");
         }
     }
 

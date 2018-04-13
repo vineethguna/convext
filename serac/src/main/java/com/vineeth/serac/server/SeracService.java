@@ -3,6 +3,7 @@ package com.vineeth.serac.server;
 import com.vineeth.serac.manager.SeracManager;
 import com.vineeth.serac.messages.GossipMessage;
 import com.vineeth.serac.messages.Message;
+import com.vineeth.serac.messages.MessageType;
 import com.vineeth.serac.rpc.SeracGrpc;
 import com.vineeth.serac.rpc.SeracProto;
 import com.vineeth.serac.rpc.SeracProto.Response;
@@ -27,9 +28,12 @@ public class SeracService extends SeracGrpc.SeracImplBase {
     @Override
     public void processMessage(SeracProto.Message rpcMessage,
                                         StreamObserver<Response> responseObserver) {
+        logger.info("Received message through rpc");
         try {
             Message message = convertRpcMessageToMessage(rpcMessage);
             seracManager.handleMessage(message);
+            responseObserver.onNext(Response.newBuilder().setErrorInfo("").setSuccess(true).build());
+            responseObserver.onCompleted();
         } catch (Exception e) {
             logger.error("RPC Message processing failed", e);
         }
@@ -47,9 +51,10 @@ public class SeracService extends SeracGrpc.SeracImplBase {
 
     private GossipMessage convertRpcGossipMessageToGossipMessage(SeracProto.GossipMessage rpcGossipMessage) {
         GossipMessage gossipMessage = new GossipMessage();
+        gossipMessage.setType(MessageType.GOSSIP);
         gossipMessage.setHeartBeatData(rpcGossipMessage.getHeartBeatDataMap());
         gossipMessage.setNodeData(getNodeDataFromRpcNodeData(rpcGossipMessage.getNodeDataMap()));
-        gossipMessage.setNodeId(gossipMessage.getNodeId());
+        gossipMessage.setNodeId(rpcGossipMessage.getNodeId());
         gossipMessage.setSuspectData(getSuspectDataFromRpcSuspectData(rpcGossipMessage.getSuspectDataMap()));
         return gossipMessage;
     }

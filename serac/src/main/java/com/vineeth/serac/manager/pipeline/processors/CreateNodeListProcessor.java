@@ -28,6 +28,7 @@ public class CreateNodeListProcessor implements IProcessor {
     private List<Node> getCurrentListFromNodeStore() {
         List<Node> nodeList = new ArrayList<>();
         List<String> nodeIds = nodeStore.getAllNodeIds();
+        nodeIds.remove(nodeStore.getCurrentNode().getId());
         for(String nodeId : nodeIds) {
             nodeList.add(nodeStore.getNodeById(nodeId));
         }

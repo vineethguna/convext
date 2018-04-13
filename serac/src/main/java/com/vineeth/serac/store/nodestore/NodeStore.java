@@ -13,6 +13,11 @@ public class NodeStore {
     public NodeStore(Node currentNode) {
         nodeStore = new ConcurrentHashMap<>();
         this.currentNode = currentNode;
+        initializeNodeForCurrentNode();
+    }
+
+    private void initializeNodeForCurrentNode() {
+        addNode(currentNode.getId(), currentNode);
     }
 
     public Node getNodeById(String nodeId) {

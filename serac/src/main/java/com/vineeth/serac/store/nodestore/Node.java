@@ -1,8 +1,5 @@
 package com.vineeth.serac.store.nodestore;
 
-/**
- * Created by guna on 11/04/18.
- */
 public class Node {
     private String id;
     private String host;

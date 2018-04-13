@@ -11,12 +11,16 @@ import com.vineeth.serac.store.nodestore.Node;
 import com.vineeth.serac.store.nodestore.NodeStore;
 import com.vineeth.serac.store.suspectstore.SuspectRow;
 import com.vineeth.serac.store.suspectstore.SuspectStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class MessageProcessor implements IProcessor {
+    private static final Logger logger = LoggerFactory.getLogger(MessageProcessor.class);
+
     private MessageStore messageStore;
     private NodeStore nodeStore;
     private HeartBeatStore heartBeatStore;
@@ -39,6 +43,7 @@ public class MessageProcessor implements IProcessor {
     }
 
     private void processMessages(List<Message> messages) {
+        logger.info("Started processing messages by node {}", nodeStore.getCurrentNode().getId());
         for(Message message: messages) {
             if(message instanceof GossipMessage) {
                 processGossipMessage((GossipMessage) message);

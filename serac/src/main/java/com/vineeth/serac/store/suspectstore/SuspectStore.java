@@ -12,6 +12,11 @@ public class SuspectStore {
     public SuspectStore(NodeStore nodeStore) {
         this.nodeStore = nodeStore;
         suspectStore = new ConcurrentHashMap<>();
+        initializeSuspectRowForCurrentNode(nodeStore.getCurrentNode().getId());
+    }
+
+    private void initializeSuspectRowForCurrentNode(String currentNodeId) {
+        addNode(currentNodeId);
     }
 
     public void addNode(String nodeId) {

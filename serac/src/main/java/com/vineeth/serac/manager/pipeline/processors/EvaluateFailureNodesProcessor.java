@@ -5,11 +5,15 @@ import com.vineeth.serac.manager.pipeline.ProcessorContext;
 import com.vineeth.serac.store.nodestore.Node;
 import com.vineeth.serac.store.nodestore.NodeStore;
 import com.vineeth.serac.store.suspectstore.SuspectStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class EvaluateFailureNodesProcessor implements IProcessor {
+    private static final Logger logger = LoggerFactory.getLogger(EvaluateFailureNodesProcessor.class);
+
     private NodeStore nodeStore;
     private SuspectStore suspectStore;
     private float quorumPercentage;
@@ -40,6 +44,7 @@ public class EvaluateFailureNodesProcessor implements IProcessor {
             if(node.isHealthy()) {
                 int suspectCount = suspectStore.getSuspectCountForNodeId(nodeId);
                 if(suspectCount / totalNodes > quorumPercentage) {
+                    logger.info("Node {} marked FAILED by Node {}", node.getId(), nodeStore.getCurrentNode().getId());
                     node.setHealthy(false);
                 }
             }

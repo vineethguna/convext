@@ -13,8 +13,12 @@ public class HeartBeatStore {
     public HeartBeatStore(NodeStore nodeStore) {
         this.nodeStore = nodeStore;
         heartBeatStore = new ConcurrentHashMap<>();
+        initializeHeartBeatForCurrentNode(nodeStore.getCurrentNode().getId());
     }
 
+    private void initializeHeartBeatForCurrentNode(String currentNodeId) {
+        addNode(currentNodeId);
+    }
 
     public void addNode(String nodeId) {
         if(nodeStore.containsNode(nodeId)) {

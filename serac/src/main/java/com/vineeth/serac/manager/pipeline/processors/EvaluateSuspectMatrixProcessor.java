@@ -38,6 +38,7 @@ public class EvaluateSuspectMatrixProcessor implements IProcessor {
 
     private void evaluateSuspectMatrixForCurrentNode() {
         List<String> nodeIds = nodeStore.getAllNodeIds();
+        nodeIds.remove(nodeStore.getCurrentNode().getId());
         SuspectRow suspectRowForCurrentNode = suspectStore.getSuspectRowForNode(nodeStore.getCurrentNode().getId());
         for(String nodeId: nodeIds) {
             Long heartBeatTimeStamp = heartBeatStore.getHeartBeatForNode(nodeId);
