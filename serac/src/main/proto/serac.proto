@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option java_package = "com.vineeth.serac.rpc";
+option java_outer_classname = "SeracProto";
+
+service Serac {
+    rpc ProcessMessage(Message) returns (Response) {}
+}
+
+message Message {
+    enum Type {
+        GOSSIP = 0;
+        FAILURE = 1;
+        RECOVERY = 2;
+    }
+    Type type = 1;
+    oneof message {
+        GossipMessage gossipMessage = 2;
+    }
+}
+
+message GossipMessage {
+    string nodeId = 1;
+    map<string, GossipNode> nodeData = 2;
+    map<string, int64> heartBeatData = 3;
+    map<string, SuspectRow> suspectData = 4;
+}
+
+message GossipNode {
+    string id = 1;
+    string hostname = 2;
+    int32 port = 3;
+    bool isHealthy = 4;
+}
+
+message SuspectRow {
+    int64 lastUpdatedTimeStamp = 1;
+    map<string, bool> row = 2;
+}
+
+message Response {
+    string errorInfo = 1;
+    bool success = 2;
+}
