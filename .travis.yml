@@ -1,9 +1,4 @@
 language: java
-
-addons:
-  sonarcloud:
-    organization: "vineethguna-github"
-
-script: mvn -Dsonar.java.coveragePlugin=jacoco clean install sonar:sonar
+script: mvn -Dsonar.organization=vineethguna-github   -Dsonar.host.url=https://sonarcloud.io   -Dsonar.login=$SONAR_TOKEN -Dsonar.java.coveragePlugin=jacoco clean install sonar:sonar
 jdk:
   - oraclejdk8
