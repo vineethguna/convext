@@ -63,6 +63,10 @@ public class SeracManager {
                 TimeUnit.MILLISECONDS);
     }
 
+    public void stopPipeline() {
+        gossipEvaluationExecutorService.shutdown();
+    }
+
     public void connectToPeerNode(String host, int port) throws Exception {
         String currentNodeId = nodeStore.getCurrentNode().getId();
         Map<String, Long> heartBeatData = new HashMap<>();

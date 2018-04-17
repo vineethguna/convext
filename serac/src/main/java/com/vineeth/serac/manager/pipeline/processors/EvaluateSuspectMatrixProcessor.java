@@ -6,11 +6,15 @@ import com.vineeth.serac.store.HeartBeatStore;
 import com.vineeth.serac.store.nodestore.NodeStore;
 import com.vineeth.serac.store.suspectstore.SuspectRow;
 import com.vineeth.serac.store.suspectstore.SuspectStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class EvaluateSuspectMatrixProcessor implements IProcessor {
+    private static final Logger logger = LoggerFactory.getLogger(EvaluateSuspectMatrixProcessor.class);
+
     private NodeStore nodeStore;
     private HeartBeatStore heartBeatStore;
     private SuspectStore suspectStore;
@@ -44,6 +48,7 @@ public class EvaluateSuspectMatrixProcessor implements IProcessor {
             Long heartBeatTimeStamp = heartBeatStore.getHeartBeatForNode(nodeId);
             Long currentTimeStamp = System.currentTimeMillis();
             if((currentTimeStamp - heartBeatTimeStamp) > healthyThreshold * gossipInterval) {
+                logger.info("Marking node {} as suspect by node {}", nodeId, nodeStore.getCurrentNode().getId());
                 suspectRowForCurrentNode.updateStateForNode(nodeId, true);
             }
         }

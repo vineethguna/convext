@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MessageProcessor implements IProcessor {
     private static final Logger logger = LoggerFactory.getLogger(MessageProcessor.class);
@@ -89,7 +90,7 @@ public class MessageProcessor implements IProcessor {
                     suspectRowFromSuspectStore.getLastUpdatedTimeStamp()) {
                 suspectRowFromSuspectStore.setLastUpdatedTimeStamp(
                         suspectRowFromGossipMessage.getLastUpdatedTimeStamp());
-                suspectRowFromSuspectStore.setRow(suspectRowFromGossipMessage.getRow());
+                suspectRowFromSuspectStore.setRow(new ConcurrentHashMap<>(suspectRowFromGossipMessage.getRow()));
             }
         }
     }

@@ -30,7 +30,10 @@ public class CreateNodeListProcessor implements IProcessor {
         List<String> nodeIds = nodeStore.getAllNodeIds();
         nodeIds.remove(nodeStore.getCurrentNode().getId());
         for(String nodeId : nodeIds) {
-            nodeList.add(nodeStore.getNodeById(nodeId));
+            Node node = nodeStore.getNodeById(nodeId);
+            if(node.isHealthy()) {
+                nodeList.add(node);
+            }
         }
         return nodeList;
     }
