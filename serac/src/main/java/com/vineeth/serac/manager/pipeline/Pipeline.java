@@ -1,10 +1,15 @@
 package com.vineeth.serac.manager.pipeline;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class Pipeline {
+    private static final Logger logger = LoggerFactory.getLogger(Pipeline.class);
+
     private List<IProcessor> processorList;
 
     public Pipeline() {
@@ -24,6 +29,10 @@ public class Pipeline {
                 IProcessor currentProcessor = processorList.get(i);
                 currentCompletionStage = currentCompletionStage.thenComposeAsync(currentProcessor::process);
             }
+            currentCompletionStage.exceptionally((e) -> {
+                logger.error("Error while running pipeline", e);
+                return null;
+            });
         }
     }
 }

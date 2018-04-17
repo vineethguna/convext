@@ -44,7 +44,7 @@ public class EvaluateRecoveredNodesProcessor implements IProcessor {
             Node node = nodeStore.getNodeById(nodeId);
             if(!node.isHealthy()) {
                 int suspectCount = suspectStore.getSuspectCountForNodeId(nodeId);
-                if(suspectCount / totalNodes <= quorumPercentage) {
+                if(((float) suspectCount / totalNodes) <= quorumPercentage) {
                     logger.info("Node {} marked as RECOVERED by Node {}", node.getId(),
                             nodeStore.getCurrentNode().getId());
                     node.setHealthy(true);

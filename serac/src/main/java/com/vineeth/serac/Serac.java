@@ -76,6 +76,7 @@ public class Serac {
 
     public void stop() {
         logger.info("Stopping serac");
+        seracManager.stopPipeline();
         seracServer.stop();
     }
 }

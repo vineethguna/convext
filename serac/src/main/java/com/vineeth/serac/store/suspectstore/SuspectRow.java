@@ -34,6 +34,7 @@ public class SuspectRow {
 
     public void updateStateForNode(String nodeId, Boolean newState) {
         row.compute(nodeId, (key, value) -> newState);
+        setLastUpdatedTimeStamp(System.currentTimeMillis());
     }
 
     public boolean isNodeSuspected(String nodeId) {
